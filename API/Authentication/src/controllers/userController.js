@@ -23,7 +23,31 @@ const getAllUsers = async (
 
         const users =
             await pool.query(
-                `SELECT id, username, name, email, role, profile_picture, created_at FROM users WHERE is_active = true ORDER BY id DESC`
+                `
+                SELECT
+                    users.id,
+                    users.username,
+                    users.email,
+                    users.role,
+                    users.profile_picture,
+                    users.created_at,
+
+                    customers.name,
+
+                    merchants.nama_bisnis
+
+                FROM users
+
+                LEFT JOIN customers
+                ON customers.user_id = users.id
+
+                LEFT JOIN merchants
+                ON merchants.user_id = users.id
+
+                WHERE users.is_active = true
+
+                ORDER BY users.id DESC
+                `
             );
 
         return successResponse(
@@ -33,6 +57,8 @@ const getAllUsers = async (
         );
 
     } catch (error) {
+
+        console.log(error);
 
         return errorResponse(
             res,
@@ -47,33 +73,63 @@ const getUserById = async (
     req,
     res
 ) => {
-    
+
     try {
-        
+
         const { id } = req.params;
-        
+
         const user =
-        await pool.query(
-            `SELECT id, username, name, email, role, created_at FROM users WHERE id = $1 AND is_active = true`, [id]
-        );
-        
+            await pool.query(
+                `
+                SELECT
+                    users.id,
+                    users.username,
+                    users.email,
+                    users.role,
+                    users.profile_picture,
+                    users.created_at,
+
+                    customers.name,
+
+                    merchants.nama_bisnis,
+                    merchants.tahun_berdiri,
+                    merchants.deskripsi
+
+                FROM users
+
+                LEFT JOIN customers
+                ON customers.user_id = users.id
+
+                LEFT JOIN merchants
+                ON merchants.user_id = users.id
+
+                WHERE users.id = $1
+                AND users.is_active = true
+                `,
+                [id]
+            );
+
         // user tidak ditemukan
-        if (user.rows.length === 0) {
-            
+        if (
+            user.rows.length === 0
+        ) {
+
             return errorResponse(
                 res,
                 "User tidak ditemukan"
             );
         }
-        
+
         return successResponse(
             res,
             "Berhasil mengambil detail user",
             user.rows[0]
         );
-        
+
     } catch (error) {
-        
+
+        console.log(error);
+
         return errorResponse(
             res,
             error.message

@@ -24,7 +24,13 @@ const register = async (req, res) => {
         } = req.body;
 
         // validasi
-        if (!username ||!name ||!email ||!password) {
+        if (
+            !username ||
+            !name ||
+            !email ||
+            !password ||
+            role === undefined
+        ) {
 
             return errorResponse(
                 res,
@@ -32,28 +38,50 @@ const register = async (req, res) => {
             );
         }
 
+        // validasi role
+        if (![1, 2].includes(role)) {
+
+            return errorResponse(
+                res,
+                "Role tidak valid"
+            );
+        }
+
         // cek email
         const checkEmail =
             await pool.query(
-                "SELECT * FROM users WHERE email = $1",
+                `
+                SELECT *
+                FROM users
+                WHERE email = $1
+                `,
                 [email]
             );
 
-        if (checkEmail.rows.length > 0) {
+        if (
+            checkEmail.rows.length > 0
+        ) {
 
             return errorResponse(
                 res,
                 "Email sudah digunakan"
             );
         }
-        
+
+        // cek username
         const checkUsername =
             await pool.query(
-                "SELECT * FROM users WHERE username = $1",
+                `
+                SELECT *
+                FROM users
+                WHERE username = $1
+                `,
                 [username]
             );
 
-        if (checkUsername.rows.length > 0) {
+        if (
+            checkUsername.rows.length > 0
+        ) {
 
             return errorResponse(
                 res,
@@ -63,19 +91,71 @@ const register = async (req, res) => {
 
         // hash password
         const hashedPassword =
-            await bcrypt.hash(password, 10);
+            await bcrypt.hash(
+                password,
+                10
+            );
 
-        // insert user
-        await pool.query(
-            `INSERT INTO users (username, name, email, password, role) VALUES ($1, $2, $3, $4, $5)`,
-            [
-                username,
-                name,
-                email,
-                hashedPassword,
-                role,   
-            ]
-        );
+        // insert users
+        const newUser =
+            await pool.query(
+                `
+                INSERT INTO users (
+                    username,
+                    email,
+                    password,
+                    role
+                )
+                VALUES ($1, $2, $3, $4)
+                RETURNING id
+                `,
+                [
+                    username,
+                    email,
+                    hashedPassword,
+                    role,
+                ]
+            );
+
+        // ambil user id
+        const userId =
+            newUser.rows[0].id;
+
+        // jika customer
+        if (role === 2) {
+
+            await pool.query(
+                `
+                INSERT INTO customers (
+                    user_id,
+                    name
+                )
+                VALUES ($1, $2)
+                `,
+                [
+                    userId,
+                    name,
+                ]
+            );
+        }
+
+        // jika merchant
+        if (role === 1) {
+
+            await pool.query(
+                `
+                INSERT INTO merchants (
+                    user_id,
+                    nama_bisnis
+                )
+                VALUES ($1, $2)
+                `,
+                [
+                    userId,
+                    name,
+                ]
+            );
+        }
 
         return successResponse(
             res,
@@ -83,6 +163,8 @@ const register = async (req, res) => {
         );
 
     } catch (error) {
+
+        console.log(error);
 
         return errorResponse(
             res,
