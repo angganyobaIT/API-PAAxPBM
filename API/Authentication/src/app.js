@@ -21,6 +21,24 @@ const merchantLocationRoutes =
         "./routes/merchantLocationRoutes"
     );
 
+const productRoutes =
+    require("./routes/productRoutes");
+
+const promotionRoutes =
+    require(
+        "./routes/promotionRoutes"
+    );
+
+const customerVoucherRoutes =
+    require(
+        "./routes/customerVoucherRoutes"
+    );
+
+const thematicRouteRoutes =
+    require(
+        "./routes/thematicRouteRoutes"
+    );
+
 app.use(cors());
 
 app.use(express.json());
@@ -53,6 +71,26 @@ app.use(
 app.use(
     "/api/merchant-locations",
     merchantLocationRoutes
+);
+
+app.use(
+    "/api/products",
+    productRoutes
+);
+
+app.use(
+    "/api/promotions",
+    promotionRoutes
+);
+
+app.use(
+    "/api/customer-vouchers",
+    customerVoucherRoutes
+);
+
+app.use(
+    "/api/thematic-routes",
+    thematicRouteRoutes
 );
 
 module.exports = app;
