@@ -1,6 +1,8 @@
 const pool = require("../config/db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const transporter =
+    require("../config/mail");
 
 const {
     successResponse,
@@ -179,7 +181,230 @@ const login = async (req, res) => {
 };
 
 
+// SEND OTP RESET PASSWORD
+const sendResetOtp = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const { email } = req.body;
+
+        // validasi
+        if (!email) {
+
+            return errorResponse(
+                res,
+                "Email wajib diisi"
+            );
+        }
+
+        // cek user
+        const user =
+            await pool.query(
+                `
+                SELECT * FROM users
+                WHERE email = $1
+                `,
+                [email]
+            );
+
+        if (
+            user.rows.length === 0
+        ) {
+
+            return errorResponse(
+                res,
+                "Email tidak ditemukan"
+            );
+        }
+
+        // generate otp
+        const otp =
+            Math.floor(
+                100000 +
+                Math.random() * 900000
+            ).toString();
+
+        // expired 5 menit
+        const expiredAt =
+            new Date(
+                Date.now() +
+                5 * 60 * 1000
+            );
+
+        // simpan otp
+        await pool.query(
+            `
+            UPDATE users
+            SET
+                otp_code = $1,
+                otp_expired_at = $2
+            WHERE email = $3
+            `,
+            [
+                otp,
+                expiredAt,
+                email,
+            ]
+        );
+
+        // kirim email
+        await transporter.sendMail({
+
+            from:
+                process.env.EMAIL_USER,
+
+            to: email,
+
+            subject:
+                "Reset Password OTP",
+
+            html: `
+                <h2>Reset Password</h2>
+                <p>OTP anda:</p>
+
+                <h1>${otp}</h1>
+
+                <p>
+                    OTP berlaku selama
+                    5 menit
+                </p>
+            `,
+        });
+
+        return successResponse(
+            res,
+            "OTP berhasil dikirim ke email"
+        );
+
+    } catch (error) {
+
+        console.log(error);
+
+        return errorResponse(
+            res,
+            error.message
+        );
+    }
+};
+
+// RESET PASSWORD
+const resetPassword = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const {
+            email,
+            otp,
+            new_password,
+        } = req.body;
+
+        // validasi
+        if (
+            !email ||
+            !otp ||
+            !new_password
+        ) {
+
+            return errorResponse(
+                res,
+                "Semua field wajib diisi"
+            );
+        }
+
+        // cek user
+        const user =
+            await pool.query(
+                `
+                SELECT * FROM users
+                WHERE email = $1
+                `,
+                [email]
+            );
+
+        if (
+            user.rows.length === 0
+        ) {
+
+            return errorResponse(
+                res,
+                "User tidak ditemukan"
+            );
+        }
+
+        const userData =
+            user.rows[0];
+
+        // cek otp
+        if (
+            userData.otp_code !== otp
+        ) {
+
+            return errorResponse(
+                res,
+                "OTP salah"
+            );
+        }
+
+        // cek expired
+        if (
+            new Date() >
+            userData.otp_expired_at
+        ) {
+
+            return errorResponse(
+                res,
+                "OTP expired"
+            );
+        }
+
+        // hash password baru
+        const hashedPassword =
+            await bcrypt.hash(
+                new_password,
+                10
+            );
+
+        // update password
+        await pool.query(
+            `
+            UPDATE users
+            SET
+                password = $1,
+                otp_code = NULL,
+                otp_expired_at = NULL
+            WHERE email = $2
+            `,
+            [
+                hashedPassword,
+                email,
+            ]
+        );
+
+        return successResponse(
+            res,
+            "Password berhasil direset"
+        );
+
+    } catch (error) {
+
+        console.log(error);
+
+        return errorResponse(
+            res,
+            error.message
+        );
+    }
+};
+
 module.exports = {
     register,
-    login, 
+    login,
+    sendResetOtp,
+    resetPassword,
 };

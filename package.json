@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "nodemailer": "^8.0.8",
     "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1"
   }

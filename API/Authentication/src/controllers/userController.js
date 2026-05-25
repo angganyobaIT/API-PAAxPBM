@@ -1,6 +1,12 @@
 const pool =
     require("../config/db");
 
+const cloudinary =
+    require("../config/cloudinary");
+
+const streamifier =
+    require("streamifier");
+
 const {
     successResponse,
     errorResponse,
@@ -17,7 +23,7 @@ const getAllUsers = async (
 
         const users =
             await pool.query(
-                `SELECT id, username, name, email, role, created_at FROM users WHERE is_active = true ORDER BY id DESC`
+                `SELECT id, username, name, email, role, profile_picture, created_at FROM users WHERE is_active = true ORDER BY id DESC`
             );
 
         return successResponse(
@@ -317,10 +323,96 @@ const restoreUser = async (
     }
 };
 
+
+// UPLOAD PROFILE PICTURE
+const uploadProfilePicture =
+    async (req, res) => {
+
+    try {
+
+        const { id } = req.params;
+
+        // cek file
+        if (!req.file) {
+
+            return errorResponse(
+                res,
+                "File wajib diupload"
+            );
+        }
+
+        // upload cloudinary
+        const result =
+            await new Promise(
+                (resolve, reject) => {
+
+                    const stream =
+                        cloudinary.uploader.upload_stream(
+
+                            {
+                                folder:
+                                    "profile_picture",
+                            },
+
+                            (
+                                error,
+                                result
+                            ) => {
+
+                                if (error)
+                                    reject(error);
+
+                                else
+                                    resolve(result);
+                            }
+                        );
+
+                    streamifier
+                        .createReadStream(
+                            req.file.buffer
+                        )
+                        .pipe(stream);
+                }
+            );
+
+        // simpan url ke database
+        await pool.query(
+            `
+            UPDATE users
+            SET profile_picture = $1
+            WHERE id = $2
+            `,
+            [
+                result.secure_url,
+                id,
+            ]
+        );
+
+        return successResponse(
+            res,
+            "Foto profile berhasil diupload",
+            {
+                profile_picture:
+                    result.secure_url,
+            }
+        );
+
+    } catch (error) {
+
+        console.log(error);
+
+        return errorResponse(
+            res,
+            error.message
+        );
+    }
+};
+
 module.exports = {
     getAllUsers,
     getUserById,
     updateUser,
     deleteUser,
     restoreUser,
+    uploadProfilePicture,
 };

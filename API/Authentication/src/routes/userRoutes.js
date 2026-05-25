@@ -10,10 +10,15 @@ const {
     updateUser,
     deleteUser,
     restoreUser,
+    uploadProfilePicture,
 } = require(
     "../controllers/userController"
 );
 
+const upload =
+    require(
+        "../middleware/uploadMiddleware"
+    );
 
 // GET ALL USERS
 router.get(
@@ -43,6 +48,13 @@ router.delete(
 router.put(
     "/restore/:id",
     restoreUser
+);
+
+// UPLOAD PROFILE PICTURE
+router.put(
+    "/upload-profile/:id",
+    upload.single("profile_picture"),
+    uploadProfilePicture
 );
 
 /**
@@ -194,5 +206,31 @@ router.put(
  *         description: User berhasil diaktifkan kembali
  */
 
+/**
+ * @swagger
+ * /api/users/upload-profile/{id}:
+ *   put:
+ *     summary: Upload foto profile user
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               profile_picture:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Foto profile berhasil diupload
+ */
 
 module.exports = router;

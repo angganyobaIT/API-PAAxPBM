@@ -5,8 +5,35 @@ const router = express.Router();
 const {
     register,
     login,
-} = require("../controllers/authController");
+    sendResetOtp,
+    resetPassword,
+    } = require(
+        "../controllers/authController"
+    );
 
+
+    router.post(
+        "/register",
+        register
+    );
+
+    router.post(
+        "/login",
+        login
+    );
+
+    // SEND OTP
+    router.post(
+        "/send-reset-otp",
+        sendResetOtp
+    );
+
+
+    // RESET PASSWORD
+    router.post(
+        "/reset-password",
+        resetPassword
+    );
 
 // REGISTER
 /**
@@ -36,10 +63,6 @@ const {
  *       200:
  *         description: Register berhasil
  */
-router.post(
-    "/register",
-    register
-);
 
 
 // LOGIN
@@ -64,9 +87,5 @@ router.post(
  *       200:
  *         description: Login berhasil
  */
-router.post(
-    "/login",
-    login
-);
 
 module.exports = router;
