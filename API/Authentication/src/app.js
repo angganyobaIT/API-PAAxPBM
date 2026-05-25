@@ -13,6 +13,13 @@ const {
 const app = express();
 const userRoutes =
     require("./routes/userRoutes");
+const reviewRoutes =
+    require("./routes/reviewRoutes");
+
+const merchantLocationRoutes =
+    require(
+        "./routes/merchantLocationRoutes"
+    );
 
 app.use(cors());
 
@@ -37,4 +44,15 @@ app.use(
     "/api/users",
     userRoutes
 );
+
+app.use(
+    "/api/reviews",
+    reviewRoutes
+);
+
+app.use(
+    "/api/merchant-locations",
+    merchantLocationRoutes
+);
+
 module.exports = app;
