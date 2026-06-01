@@ -4,6 +4,11 @@ const express =
 const router =
     express.Router();
 
+const verifyToken =
+    require("../middleware/auth");
+
+router.use(verifyToken);
+
 const {
     createPromotion,
     getAllPromotions,

@@ -138,7 +138,6 @@ const getUserById = async (
 };
 
 // UPDATE PROFILE
-// UPDATE PROFILE
 const updateUser = async (
     req,
     res
@@ -150,7 +149,6 @@ const updateUser = async (
 
         const {
             username,
-            name,
             email,
             role,
         } = req.body;
@@ -158,7 +156,6 @@ const updateUser = async (
         // validasi
         if (
             !username ||
-            !name ||
             !email ||
             role === undefined
         ) {
@@ -182,13 +179,13 @@ const updateUser = async (
         const userCheck =
             await pool.query(
                 `
-                SELECT * FROM users
+                SELECT *
+                FROM users
                 WHERE id = $1
                 `,
                 [id]
             );
 
-        // user tidak ditemukan
         if (
             userCheck.rows.length === 0
         ) {
@@ -203,7 +200,8 @@ const updateUser = async (
         const usernameCheck =
             await pool.query(
                 `
-                SELECT * FROM users
+                SELECT *
+                FROM users
                 WHERE username = $1
                 AND id != $2
                 `,
@@ -223,7 +221,13 @@ const updateUser = async (
         // cek email duplicate
         const emailCheck =
             await pool.query(
-                `SELECT * FROM users WHERE email = $1 AND id != $2`, [email, id]
+                `
+                SELECT *
+                FROM users
+                WHERE email = $1
+                AND id != $2
+                `,
+                [email, id]
             );
 
         if (
@@ -238,10 +242,16 @@ const updateUser = async (
 
         // update user
         await pool.query(
-            `UPDATE users SET username = $1, name = $2, email = $3, role = $4 WHERE id = $5`,
+            `
+            UPDATE users
+            SET
+                username = $1,
+                email = $2,
+                role = $3
+            WHERE id = $4
+            `,
             [
                 username,
-                name,
                 email,
                 role,
                 id,
@@ -262,6 +272,119 @@ const updateUser = async (
     }
 };
 
+const updateProfile = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const { id } = req.params;
+
+        const userCheck =
+            await pool.query(
+                `
+                SELECT *
+                FROM users
+                WHERE id = $1
+                `,
+                [id]
+            );
+
+        if (
+            userCheck.rows.length === 0
+        ) {
+
+            return errorResponse(
+                res,
+                "User tidak ditemukan"
+            );
+        }
+
+        const user =
+            userCheck.rows[0];
+
+        // CUSTOMER
+        if (user.role === 2) {
+
+            const { name } =
+                req.body;
+
+            if (!name) {
+
+                return errorResponse(
+                    res,
+                    "Nama wajib diisi"
+                );
+            }
+
+            await pool.query(
+                `
+                UPDATE customers
+                SET
+                    name = $1,
+                    updated_at = NOW()
+                WHERE user_id = $2
+                `,
+                [
+                    name,
+                    id,
+                ]
+            );
+        }
+
+        // MERCHANT
+        else {
+
+            const {
+                nama_bisnis,
+                deskripsi,
+                tahun_berdiri,
+            } = req.body;
+
+            if (
+                !nama_bisnis ||
+                !deskripsi ||
+                !tahun_berdiri
+            ) {
+
+                return errorResponse(
+                    res,
+                    "Semua field wajib diisi"
+                );
+            }
+
+            await pool.query(
+                `
+                UPDATE merchants
+                SET
+                    nama_bisnis = $1,
+                    deskripsi = $2,
+                    tahun_berdiri = $3
+                WHERE user_id = $4
+                `,
+                [
+                    nama_bisnis,
+                    deskripsi,
+                    tahun_berdiri,
+                    id,
+                ]
+            );
+        }
+
+        return successResponse(
+            res,
+            "Profile berhasil diupdate"
+        );
+
+    } catch (error) {
+
+        return errorResponse(
+            res,
+            error.message
+        );
+    }
+};
 
 // SOFT DELETE USER
 const deleteUser = async (
@@ -467,6 +590,7 @@ const uploadProfilePicture =
 module.exports = {
     getAllUsers,
     getUserById,
+    updateProfile,
     updateUser,
     deleteUser,
     restoreUser,

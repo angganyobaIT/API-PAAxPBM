@@ -4,15 +4,20 @@ const swaggerJsdoc =
 const swaggerUi =
     require("swagger-ui-express");
 
-
 const options = {
 
     definition: {
+
         openapi: "3.0.0",
 
         info: {
-            title: "PBM Litera API",
-            version: "1.0.0",
+
+            title:
+                "PBM Litera API",
+
+            version:
+                "1.0.0",
+
             description:
                 "API documentation PBM Litera",
         },
@@ -21,6 +26,30 @@ const options = {
             {
                 url:
                     "http://localhost:3000",
+            },
+        ],
+
+        components: {
+
+            securitySchemes: {
+
+                bearerAuth: {
+
+                    type: "http",
+
+                    scheme: "bearer",
+
+                    bearerFormat: "JWT",
+
+                    description:
+                        "Masukkan JWT Token dengan format: Bearer {token}",
+                },
+            },
+        },
+
+        security: [
+            {
+                bearerAuth: [],
             },
         ],
     },
