@@ -88,4 +88,62 @@ const {
  *         description: Login berhasil
  */
 
+/**
+ * @swagger
+ * /api/auth/send-reset-otp:
+ *   post:
+ *     summary: Mengirim OTP reset password ke email
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: user@gmail.com
+ *     responses:
+ *       200:
+ *         description: OTP berhasil dikirim ke email
+ *       400:
+ *         description: Email tidak ditemukan
+ */
+
+/**
+ * @swagger
+ * /api/auth/reset-password:
+ *   post:
+ *     summary: Reset password menggunakan OTP
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - otp
+ *               - new_password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: user@gmail.com
+ *               otp:
+ *                 type: string
+ *                 example: "123456"
+ *               new_password:
+ *                 type: string
+ *                 example: passwordBaru123
+ *     responses:
+ *       200:
+ *         description: Password berhasil direset
+ *       400:
+ *         description: OTP salah atau expired
+ */
+
 module.exports = router;
