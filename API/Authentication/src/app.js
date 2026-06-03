@@ -44,6 +44,11 @@ const routeDetailRoutes =
         "./routes/routeDetailRoutes"
     );
 
+const merchantRoutes =
+    require(
+        "./routes/merchantRoutes"
+    );
+
 app.use(cors());
 
 app.use(express.json());
@@ -103,4 +108,8 @@ app.use(
     routeDetailRoutes
 );
 
+app.use(
+    "/api/merchants",
+    merchantRoutes
+);
 module.exports = app;
