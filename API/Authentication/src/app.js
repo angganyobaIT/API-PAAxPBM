@@ -44,15 +44,11 @@ const routeDetailRoutes =
         "./routes/routeDetailRoutes"
     );
 
-const merchantRoutes =
-    require(
-        "./routes/merchantRoutes"
-    );
-
 const customerRoutes =
-    require(
-        "./routes/customerRoutes"
-    );
+    require("./routes/customerRoutes");
+
+const merchantRoutes =
+    require("./routes/merchantRoutes");
 
 app.use(cors());
 
