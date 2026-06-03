@@ -113,14 +113,15 @@ app.use(
     routeDetailRoutes
 );
 
-app.use(
-    "/api/merchants",
-    merchantRoutes
-);
 
 app.use(
     "/api/customers",
     customerRoutes
+);
+
+app.use(
+    "/api/merchants",
+    merchantRoutes
 );
 
 module.exports = app;
