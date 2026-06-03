@@ -111,25 +111,6 @@ router.get(
  *         description: Berhasil mengambil detail route
  */
 
-/**
- * @swagger
- * /api/route-details/thematic-route/{id}:
- *   get:
- *     summary: Mengambil merchant berdasarkan thematic route
- *     tags: [Route Details]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID Thematic Route
- *     responses:
- *       200:
- *         description: Berhasil mengambil merchant pada thematic route
- */
 
 module.exports =
     router;
