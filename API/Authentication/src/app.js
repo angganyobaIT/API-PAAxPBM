@@ -39,6 +39,11 @@ const thematicRouteRoutes =
         "./routes/thematicRouteRoutes"
     );
 
+const routeDetailRoutes =
+    require(
+        "./routes/routeDetailRoutes"
+    );
+
 app.use(cors());
 
 app.use(express.json());
@@ -91,6 +96,11 @@ app.use(
 app.use(
     "/api/thematic-routes",
     thematicRouteRoutes
+);
+
+app.use(
+    "/api/route-details",
+    routeDetailRoutes
 );
 
 module.exports = app;
