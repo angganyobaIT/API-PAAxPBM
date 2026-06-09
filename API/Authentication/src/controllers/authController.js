@@ -188,7 +188,7 @@ const login = async (req, res) => {
 
             return errorResponse(
                 res,
-                "Email dan password wajib diisi"
+                "Username dan password wajib diisi"
             );
         }
 

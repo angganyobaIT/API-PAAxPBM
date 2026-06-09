@@ -30,6 +30,7 @@ const getAllUsers = async (
                     users.email,
                     users.role,
                     users.profile_picture,
+                    users.is_active
                     users.created_at,
 
                     customers.name,
@@ -87,6 +88,7 @@ const getUserById = async (
                     users.email,
                     users.role,
                     users.profile_picture,
+                    users.is_active
                     users.created_at,
 
                     customers.name,
