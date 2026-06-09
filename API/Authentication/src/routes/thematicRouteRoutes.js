@@ -47,8 +47,6 @@ const {
  *                         type: integer
  *                       judul_rute:
  *                         type: string
- *                       panjang_rute:
- *                         type: number
  *                       deskripsi:
  *                         type: string
  *                       is_delete:
@@ -90,8 +88,6 @@ const {
  *                       type: integer
  *                     judul_rute:
  *                       type: string
- *                     panjang_rute:
- *                       type: number
  *                     deskripsi:
  *                       type: string
  *                     is_delete:
@@ -117,8 +113,6 @@ const {
  *             properties:
  *               judul_rute:
  *                 type: string
- *               panjang_rute:
- *                 type: number
  *               deskripsi:
  *                 type: string
  *     responses:
@@ -147,8 +141,6 @@ const {
  *             properties:
  *               judul_rute:
  *                 type: string
- *               panjang_rute:
- *                 type: number
  *               deskripsi:
  *                 type: string
  *     responses:
@@ -172,7 +164,6 @@ const {
  *       200:
  *         description: Rute thematic berhasil dihapus
  */
-
 
 /**
  * @swagger
