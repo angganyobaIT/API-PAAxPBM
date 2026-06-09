@@ -30,6 +30,8 @@ const upload =
  *   get:
  *     summary: Mengambil semua produk
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Berhasil mengambil data produk
@@ -41,6 +43,8 @@ const upload =
  *   get:
  *     summary: Mengambil detail produk
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -58,21 +62,35 @@ const upload =
  *   post:
  *     summary: Menambahkan produk merchant
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         multipart/form-data:
  *           schema:
  *             type: object
+ *             required:
+ *               - merchant_id
+ *               - category_id
+ *               - nama_produk
+ *               - harga_produk
  *             properties:
  *               merchant_id:
  *                 type: integer
+ *                 example: 1
+ *               category_id:
+ *                 type: integer
+ *                 example: 1
  *               nama_produk:
  *                 type: string
+ *                 example: Nasi Goreng Spesial
  *               harga_produk:
  *                 type: integer
+ *                 example: 25000
  *               deskripsi:
  *                 type: string
+ *                 example: Nasi goreng dengan telur dan ayam
  *               image:
  *                 type: string
  *                 format: binary
@@ -87,6 +105,8 @@ const upload =
  *   put:
  *     summary: Mengubah produk
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -99,15 +119,27 @@ const upload =
  *         multipart/form-data:
  *           schema:
  *             type: object
+ *             required:
+ *               - category_id
+ *               - nama_produk
+ *               - harga_produk
+ *               - is_available
  *             properties:
+ *               category_id:
+ *                 type: integer
+ *                 example: 1
  *               nama_produk:
  *                 type: string
+ *                 example: Nasi Goreng Spesial
  *               harga_produk:
  *                 type: integer
+ *                 example: 25000
  *               deskripsi:
  *                 type: string
+ *                 example: Nasi goreng dengan telur dan ayam
  *               is_available:
  *                 type: boolean
+ *                 example: true
  *               image:
  *                 type: string
  *                 format: binary

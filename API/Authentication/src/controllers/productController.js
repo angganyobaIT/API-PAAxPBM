@@ -24,7 +24,6 @@ const getAllProducts = async (
             await pool.query(
                 `
                 SELECT
-
                     products.id,
                     products.nama_produk,
                     products.harga_produk,
@@ -33,17 +32,15 @@ const getAllProducts = async (
                     products.is_available,
                     products.created_at,
                     products.updated_at,
-
-                    merchants.nama_bisnis
+                    merchants.nama_bisnis,
+                    category_products.id
+                        AS category_id,
+                    category_products.category_name
 
                 FROM products
 
-                JOIN merchants
-                ON merchants.id =
-                products.merchant_id
-
-                WHERE products.is_available = true
-
+                JOIN merchants ON merchants.id = products.merchant_id
+                JOIN category_products ON category_products.id = products.category_id
                 ORDER BY products.id DESC
                 `
             );
@@ -79,7 +76,6 @@ const getProductById = async (
             await pool.query(
                 `
                 SELECT
-
                     products.id,
                     products.nama_produk,
                     products.harga_produk,
@@ -88,15 +84,16 @@ const getProductById = async (
                     products.is_available,
                     products.created_at,
                     products.updated_at,
-
-                    merchants.nama_bisnis
+                    merchants.nama_bisnis,
+                    category_products.id
+                        AS category_id,
+                    category_products.category_name
 
                 FROM products
 
-                JOIN merchants
-                ON merchants.id =
-                products.merchant_id
-
+                JOIN merchants ON merchants.id = products.merchant_id
+                JOIN category_products ON category_products.id = products.category_id
+                
                 WHERE products.id = $1
                 AND products.is_available = true
                 `,
@@ -141,6 +138,7 @@ const createProduct = async (
 
         const {
             merchant_id,
+            category_id,
             nama_produk,
             harga_produk,
             deskripsi,
@@ -149,6 +147,7 @@ const createProduct = async (
         // validasi
         if (
             !merchant_id ||
+            !category_id ||
             !nama_produk ||
             !harga_produk
         ) {
@@ -178,6 +177,26 @@ const createProduct = async (
             return errorResponse(
                 res,
                 "Merchant tidak ditemukan"
+            );
+        }
+
+        const categoryCheck =
+            await pool.query(
+                `
+                SELECT *
+                FROM category_products
+                WHERE id = $1
+                `,
+                [category_id]
+            );
+
+        if (
+            categoryCheck.rows.length === 0
+        ) {
+
+            return errorResponse(
+                res,
+                "Kategori produk tidak ditemukan"
             );
         }
 
@@ -231,19 +250,23 @@ const createProduct = async (
             `
             INSERT INTO products (
                 merchant_id,
+                category_id,
                 nama_produk,
                 harga_produk,
                 deskripsi,
                 image_url
             )
-            VALUES ($1, $2, $3, $4, $5)
+            VALUES ($1, $2, $3, $4, $5, $6)
             `,
             [
-                merchant_id,
-                nama_produk,
-                harga_produk,
-                deskripsi,
-                imageUrl,
+                [
+                    merchant_id,
+                    category_id,
+                    nama_produk,
+                    harga_produk,
+                    deskripsi,
+                    imageUrl,
+                ]
             ]
         );
 
@@ -274,6 +297,7 @@ const updateProduct = async (
         const { id } = req.params;
 
         const {
+            category_id,
             nama_produk,
             harga_produk,
             deskripsi,
@@ -282,6 +306,7 @@ const updateProduct = async (
 
         // validasi
         if (
+            !category_id ||
             !nama_produk ||
             !harga_produk ||
             is_available === undefined
@@ -367,15 +392,17 @@ const updateProduct = async (
             `
             UPDATE products
             SET
-                nama_produk = $1,
-                harga_produk = $2,
-                deskripsi = $3,
-                image_url = $4,
-                is_available = $5,
+                category_id = $1,
+                nama_produk = $2,
+                harga_produk = $3,
+                deskripsi = $4,
+                image_url = $5,
+                is_available = $6,
                 updated_at = NOW()
-            WHERE id = $6
+            WHERE id = $7
             `,
             [
+                category_id,
                 nama_produk,
                 harga_produk,
                 deskripsi,

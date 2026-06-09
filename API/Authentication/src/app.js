@@ -52,6 +52,11 @@ const customerRoutes =
 const merchantRoutes =
     require("./routes/merchantRoutes");
 
+const categoryProductRoutes =
+    require(
+        "./routes/categoryProductRoutes"
+    );
+
 app.use(cors());
 
 app.use(express.json());
@@ -120,6 +125,11 @@ app.use(
 app.use(
     "/api/merchants",
     merchantRoutes
+);
+
+app.use(
+    "/api/category-products",
+    categoryProductRoutes
 );
 
 module.exports = app;
