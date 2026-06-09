@@ -272,6 +272,20 @@ const sendResetOtp = async (
 
         const { email } = req.body;
 
+        console.log(
+            "================================"
+        );
+
+        console.log(
+            "REQUEST OTP MASUK"
+        );
+
+        console.log(
+            "EMAIL:",
+            email
+        );
+
+        // validasi
         if (!email) {
 
             return errorResponse(
@@ -280,6 +294,7 @@ const sendResetOtp = async (
             );
         }
 
+        // cek user
         const user =
             await pool.query(
                 `
@@ -294,12 +309,21 @@ const sendResetOtp = async (
             user.rows.length === 0
         ) {
 
+            console.log(
+                "EMAIL TIDAK DITEMUKAN"
+            );
+
             return errorResponse(
                 res,
                 "Email tidak ditemukan"
             );
         }
 
+        console.log(
+            "USER DITEMUKAN"
+        );
+
+        // generate otp
         const otp =
             Math.floor(
                 100000 +
@@ -312,6 +336,12 @@ const sendResetOtp = async (
                 5 * 60 * 1000
             );
 
+        console.log(
+            "OTP:",
+            otp
+        );
+
+        // simpan otp
         await pool.query(
             `
             UPDATE users
@@ -328,53 +358,86 @@ const sendResetOtp = async (
         );
 
         console.log(
-            "================================"
+            "OTP BERHASIL DISIMPAN KE DATABASE"
         );
 
         console.log(
-            "EMAIL TUJUAN:",
-            email
+            "MULAI VERIFY SMTP"
+        );
+
+        await transporter.verify();
+
+        console.log(
+            "SMTP VERIFIED"
         );
 
         console.log(
-            "OTP:",
-            otp
-        );
-
-        console.log(
-            "PENGIRIM:",
-            process.env.EMAIL_USER
-        );
-
-        console.log(
-            "SEBELUM SENDMAIL"
+            "MULAI SEND EMAIL"
         );
 
         const info =
-            await transporter.sendMail({
+            await Promise.race([
 
-                from:
-                    process.env.EMAIL_USER,
+                transporter.sendMail({
 
-                to: email,
+                    from:
+                        `"PBM Authentication" <${process.env.EMAIL_USER}>`,
 
-                subject:
-                    "Reset Password OTP",
+                    to: email,
 
-                html: `
-                        <h1>${otp}</h1>
-                `,
-            });
+                    subject:
+                        "Reset Password OTP",
 
-        console.log(
-            "SETELAH SENDMAIL"
-        );
+                    html: `
+                        <div style="font-family: Arial">
+
+                            <h2>Reset Password</h2>
+
+                            <p>
+                                Gunakan OTP berikut
+                                untuk reset password:
+                            </p>
+
+                            <h1>
+                                ${otp}
+                            </h1>
+
+                            <p>
+                                OTP berlaku
+                                selama 5 menit
+                            </p>
+
+                        </div>
+                    `,
+                }),
+
+                new Promise(
+                    (_, reject) =>
+                        setTimeout(
+                            () =>
+                                reject(
+                                    new Error(
+                                        "SMTP Timeout (10 detik)"
+                                    )
+                                ),
+                            10000
+                        )
+                )
+            ]);
 
         console.log(
             "EMAIL BERHASIL DIKIRIM"
         );
 
-        console.log(info);
+        console.log(
+            "MESSAGE ID:",
+            info.messageId
+        );
+
+        console.log(
+            "RESPONSE:",
+            info.response
+        );
 
         console.log(
             "================================"
@@ -388,10 +451,18 @@ const sendResetOtp = async (
     } catch (error) {
 
         console.log(
-            "EMAIL ERROR:"
+            "================================"
+        );
+
+        console.log(
+            "ERROR OTP"
         );
 
         console.log(error);
+
+        console.log(
+            "================================"
+        );
 
         return errorResponse(
             res,
