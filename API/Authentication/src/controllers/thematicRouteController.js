@@ -307,10 +307,77 @@ const deleteThematicRoute =
     }
 };
 
+// RESTORE THEMATIC ROUTE
+const restoreThematicRoute =
+async (req, res) => {
+
+    try {
+
+        const { id } =
+            req.params;
+
+        const routeCheck =
+            await pool.query(
+                `
+                SELECT *
+                FROM thematic_routes
+                WHERE id = $1
+                `,
+                [id]
+            );
+
+        if (
+            routeCheck.rows.length === 0
+        ) {
+
+            return errorResponse(
+                res,
+                "Rute thematic tidak ditemukan"
+            );
+        }
+
+        if (
+            routeCheck.rows[0].is_delete === false
+        ) {
+
+            return errorResponse(
+                res,
+                "Rute thematic sudah aktif"
+            );
+        }
+
+        await pool.query(
+            `
+            UPDATE thematic_routes
+            SET
+                is_delete = false,
+                updated_at = NOW()
+            WHERE id = $1
+            `,
+            [id]
+        );
+
+        return successResponse(
+            res,
+            "Rute thematic berhasil direstore"
+        );
+
+    } catch (error) {
+
+        console.log(error);
+
+        return errorResponse(
+            res,
+            error.message
+        );
+    }
+};
+
 module.exports = {
     createThematicRoute,
     getAllThematicRoutes,
     getThematicRouteById,
     updateThematicRoute,
     deleteThematicRoute,
+    restoreThematicRoute,
 };

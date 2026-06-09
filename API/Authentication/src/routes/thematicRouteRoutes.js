@@ -15,6 +15,7 @@ const {
     getThematicRouteById,
     updateThematicRoute,
     deleteThematicRoute,
+    restoreThematicRoute,
 } = require(
     "../controllers/thematicRouteController"
 );
@@ -172,6 +173,24 @@ const {
  *         description: Rute thematic berhasil dihapus
  */
 
+
+/**
+ * @swagger
+ * /api/thematic-routes/restore/{id}:
+ *   put:
+ *     summary: Restore rute thematic
+ *     tags: [Thematic Routes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Rute thematic berhasil direstore
+ */
+
 // GET ALL THEMATIC ROUTES
 router.get(
     "/",
@@ -200,6 +219,11 @@ router.put(
 router.delete(
     "/:id",
     deleteThematicRoute
+);
+
+router.put(
+    "/restore/:id",
+    restoreThematicRoute
 );
 
 module.exports = router;
