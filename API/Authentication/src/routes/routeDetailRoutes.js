@@ -12,14 +12,11 @@ router.use(
 );
 
 const {
-
     createRouteDetail,
-
     getAllRouteDetails,
-
     getRouteDetailById,
-
     getRouteDetailsByThematicRoute,
+    deleteRouteDetail,
 
 } = require(
     "../controllers/routeDetailController"
@@ -47,6 +44,12 @@ router.get(
 router.get(
     "/:id",
     getRouteDetailById
+);
+
+// DELETE
+router.delete(
+    "/:id",
+    deleteRouteDetail
 );
 
 /**
@@ -111,6 +114,25 @@ router.get(
  *         description: Berhasil mengambil detail route
  */
 
+/**
+ * @swagger
+ * /api/route-details/{id}:
+ *   delete:
+ *     summary: Menghapus route detail
+ *     tags: [Route Details]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID Route Detail
+ *     responses:
+ *       200:
+ *         description: Route detail berhasil dihapus
+ */
 
 module.exports =
     router;

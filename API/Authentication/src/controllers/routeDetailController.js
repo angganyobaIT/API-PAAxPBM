@@ -265,13 +265,61 @@ async (req, res) => {
     }
 };
 
+// HARD DELETE ROUTE DETAIL
+const deleteRouteDetail =
+async (req, res) => {
+
+    try {
+
+        const { id } =
+            req.params;
+
+        const check =
+            await pool.query(
+                `
+                SELECT *
+                FROM route_details
+                WHERE id = $1
+                `,
+                [id]
+            );
+
+        if (
+            check.rows.length === 0
+        ) {
+
+            return errorResponse(
+                res,
+                "Route detail tidak ditemukan"
+            );
+        }
+
+        await pool.query(
+            `
+            DELETE FROM route_details
+            WHERE id = $1
+            `,
+            [id]
+        );
+
+        return successResponse(
+            res,
+            "Route detail berhasil dihapus"
+        );
+
+    } catch (error) {
+
+        return errorResponse(
+            res,
+            error.message
+        );
+    }
+};
+
 module.exports = {
-
     createRouteDetail,
-
     getAllRouteDetails,
-
     getRouteDetailById,
-
     getRouteDetailsByThematicRoute,
+    deleteRouteDetail,
 };
