@@ -11,6 +11,20 @@ const {
         "../controllers/authController"
     );
 
+router.get(
+    "/test",
+    (req, res) => {
+
+        console.log(
+            "TEST ROUTE HIT"
+        );
+
+        return res.json({
+            success: true,
+            message: "Auth route berjalan"
+        });
+    }
+);
 
     router.post(
         "/register",
