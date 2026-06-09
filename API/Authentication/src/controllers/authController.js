@@ -262,7 +262,6 @@ const login = async (req, res) => {
     }
 };
 
-
 // SEND OTP RESET PASSWORD
 const sendResetOtp = async (
     req,
@@ -273,7 +272,6 @@ const sendResetOtp = async (
 
         const { email } = req.body;
 
-        // validasi
         if (!email) {
 
             return errorResponse(
@@ -282,11 +280,11 @@ const sendResetOtp = async (
             );
         }
 
-        // cek user
         const user =
             await pool.query(
                 `
-                SELECT * FROM users
+                SELECT *
+                FROM users
                 WHERE email = $1
                 `,
                 [email]
@@ -302,21 +300,18 @@ const sendResetOtp = async (
             );
         }
 
-        // generate otp
         const otp =
             Math.floor(
                 100000 +
                 Math.random() * 900000
             ).toString();
 
-        // expired 5 menit
         const expiredAt =
             new Date(
                 Date.now() +
                 5 * 60 * 1000
             );
 
-        // simpan otp
         await pool.query(
             `
             UPDATE users
@@ -332,29 +327,58 @@ const sendResetOtp = async (
             ]
         );
 
-        // kirim email
-        await transporter.sendMail({
+        console.log(
+            "================================"
+        );
 
-            from:
-                process.env.EMAIL_USER,
+        console.log(
+            "EMAIL TUJUAN:",
+            email
+        );
 
-            to: email,
+        console.log(
+            "OTP:",
+            otp
+        );
 
-            subject:
-                "Reset Password OTP",
+        console.log(
+            "PENGIRIM:",
+            process.env.EMAIL_USER
+        );
 
-            html: `
-                <h2>Reset Password</h2>
-                <p>OTP anda:</p>
+        console.log(
+            "SEBELUM SENDMAIL"
+        );
 
-                <h1>${otp}</h1>
+        const info =
+            await transporter.sendMail({
 
-                <p>
-                    OTP berlaku selama
-                    5 menit
-                </p>
-            `,
-        });
+                from:
+                    process.env.EMAIL_USER,
+
+                to: email,
+
+                subject:
+                    "Reset Password OTP",
+
+                html: `
+                        <h1>${otp}</h1>
+                `,
+            });
+
+        console.log(
+            "SETELAH SENDMAIL"
+        );
+
+        console.log(
+            "EMAIL BERHASIL DIKIRIM"
+        );
+
+        console.log(info);
+
+        console.log(
+            "================================"
+        );
 
         return successResponse(
             res,
@@ -362,6 +386,10 @@ const sendResetOtp = async (
         );
 
     } catch (error) {
+
+        console.log(
+            "EMAIL ERROR:"
+        );
 
         console.log(error);
 

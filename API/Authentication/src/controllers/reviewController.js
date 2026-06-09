@@ -21,36 +21,35 @@ const getAllReviews = async (
     try {
 
         const reviews =
-            await pool.query(
-                `
-                SELECT
+        await pool.query(
+            `
+            SELECT
 
-                    reviews.id,
-                    reviews.rating,
-                    reviews.deskripsi,
-                    reviews.image_url,
-                    reviews.submitted_at,
+                reviews.id,
+                reviews.rating,
+                reviews.deskripsi,
+                reviews.image_url,
+                reviews.is_delete,
+                reviews.submitted_at,
 
-                    customers.name
-                    AS customer_name,
+                customers.name
+                AS customer_name,
 
-                    merchants.nama_bisnis
+                merchants.nama_bisnis
 
-                FROM reviews
+            FROM reviews
 
-                JOIN customers
-                ON customers.id =
-                reviews.customer_id
+            JOIN customers
+            ON customers.id =
+            reviews.customer_id
 
-                JOIN merchants
-                ON merchants.id =
-                reviews.merchant_id
+            JOIN merchants
+            ON merchants.id =
+            reviews.merchant_id
 
-                WHERE reviews.is_delete = false
-
-                ORDER BY reviews.id DESC
-                `
-            );
+            ORDER BY reviews.id DESC
+            `
+        );
 
         return successResponse(
             res,
@@ -80,36 +79,36 @@ const getReviewById = async (
         const { id } = req.params;
 
         const review =
-            await pool.query(
-                `
-                SELECT
+        await pool.query(
+            `
+            SELECT
 
-                    reviews.id,
-                    reviews.rating,
-                    reviews.deskripsi,
-                    reviews.image_url,
-                    reviews.submitted_at,
+                reviews.id,
+                reviews.rating,
+                reviews.deskripsi,
+                reviews.image_url,
+                reviews.is_delete,
+                reviews.submitted_at,
 
-                    customers.name
-                    AS customer_name,
+                customers.name
+                AS customer_name,
 
-                    merchants.nama_bisnis
+                merchants.nama_bisnis
 
-                FROM reviews
+            FROM reviews
 
-                JOIN customers
-                ON customers.id =
-                reviews.customer_id
+            JOIN customers
+            ON customers.id =
+            reviews.customer_id
 
-                JOIN merchants
-                ON merchants.id =
-                reviews.merchant_id
+            JOIN merchants
+            ON merchants.id =
+            reviews.merchant_id
 
-                WHERE reviews.id = $1
-                AND reviews.is_delete = false
-                `,
-                [id]
-            );
+            WHERE reviews.id = $1
+            `,
+            [id]
+        );
 
         // review tidak ditemukan
         if (
@@ -345,18 +344,17 @@ const deleteReview = async (
                 SELECT *
                 FROM reviews
                 WHERE id = $1
-                AND is_delete = false
                 `,
                 [id]
             );
 
         if (
-            reviewCheck.rows.length === 0
+            reviewCheck.rows[0].is_delete
         ) {
 
             return errorResponse(
                 res,
-                "Review tidak ditemukan"
+                "Review sudah dihapus"
             );
         }
 
@@ -404,7 +402,6 @@ const restoreReview = async (
                 SELECT *
                 FROM reviews
                 WHERE id = $1
-                AND is_delete = true
                 `,
                 [id]
             );
@@ -416,7 +413,17 @@ const restoreReview = async (
 
             return errorResponse(
                 res,
-                "Review tidak ditemukan atau sudah aktif"
+                "Review tidak ditemukan"
+            );
+        }
+
+        if (
+            !reviewCheck.rows[0].is_delete
+        ) {
+
+            return errorResponse(
+                res,
+                "Saat ini review tersebut masih aktif"
             );
         }
 

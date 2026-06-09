@@ -33,6 +33,36 @@ const upload =
  *     responses:
  *       200:
  *         description: Berhasil mengambil data review
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       rating:
+ *                         type: integer
+ *                       deskripsi:
+ *                         type: string
+ *                       image_url:
+ *                         type: string
+ *                       is_delete:
+ *                         type: boolean
+ *                       submitted_at:
+ *                         type: string
+ *                       customer_name:
+ *                         type: string
+ *                       nama_bisnis:
+ *                         type: string
  */
 
 /**
@@ -50,6 +80,34 @@ const upload =
  *     responses:
  *       200:
  *         description: Berhasil mengambil detail review
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     rating:
+ *                       type: integer
+ *                     deskripsi:
+ *                       type: string
+ *                     image_url:
+ *                       type: string
+ *                     is_delete:
+ *                       type: boolean
+ *                     submitted_at:
+ *                       type: string
+ *                     customer_name:
+ *                       type: string
+ *                     nama_bisnis:
+ *                       type: string
  */
 
 /**
