@@ -126,7 +126,7 @@ const createThematicRoute =
                 judul_rute,
                 deskripsi
             )
-            VALUES ($1, $2, $3)
+            VALUES ($1, $2)
             `,
             [
                 judul_rute,
