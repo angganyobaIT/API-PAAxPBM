@@ -18,7 +18,6 @@ const getAllThematicRoutes =
                 SELECT
                     id,
                     judul_rute,
-                    panjang_rute,
                     deskripsi,
                     is_delete,
                     created_at,
@@ -59,7 +58,6 @@ const getThematicRouteById =
                 SELECT
                     id,
                     judul_rute,
-                    panjang_rute,
                     deskripsi,
                     is_delete,
                     created_at,
@@ -106,14 +104,13 @@ const createThematicRoute =
 
         const {
             judul_rute,
-            panjang_rute,
             deskripsi,
         } = req.body;
 
         // validasi
         if (
             !judul_rute ||
-            !panjang_rute
+            !deskripsi
         ) {
 
             return errorResponse(
@@ -127,14 +124,12 @@ const createThematicRoute =
             `
             INSERT INTO thematic_routes (
                 judul_rute,
-                panjang_rute,
                 deskripsi
             )
             VALUES ($1, $2, $3)
             `,
             [
                 judul_rute,
-                panjang_rute,
                 deskripsi,
             ]
         );
@@ -165,14 +160,13 @@ const updateThematicRoute =
 
         const {
             judul_rute,
-            panjang_rute,
             deskripsi,
         } = req.body;
 
         // validasi
         if (
             !judul_rute ||
-            !panjang_rute
+            !deskripsi
         ) {
 
             return errorResponse(
@@ -209,14 +203,12 @@ const updateThematicRoute =
             UPDATE thematic_routes
             SET
                 judul_rute = $1,
-                panjang_rute = $2,
-                deskripsi = $3,
+                deskripsi = $2,
                 updated_at = NOW()
-            WHERE id = $4
+            WHERE id = $3
             `,
             [
                 judul_rute,
-                panjang_rute,
                 deskripsi,
                 id,
             ]
