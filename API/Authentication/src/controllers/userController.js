@@ -45,8 +45,6 @@ const getAllUsers = async (
                 LEFT JOIN merchants
                 ON merchants.user_id = users.id
 
-                WHERE users.is_active = true
-
                 ORDER BY users.id DESC
                 `
             );
@@ -106,7 +104,6 @@ const getUserById = async (
                 ON merchants.user_id = users.id
 
                 WHERE users.id = $1
-                AND users.is_active = true
                 `,
                 [id]
             );

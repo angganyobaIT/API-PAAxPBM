@@ -95,6 +95,8 @@ router.put(
  *                         type: string
  *                       role:
  *                         type: integer
+ *                       is_active:
+ *                         type: bool
  *                       created_at:
  *                         type: string
  */
@@ -138,6 +140,8 @@ router.put(
  *                       type: string
  *                     role:
  *                       type: integer
+ *                     is_active:
+ *                        type: bool
  *                     created_at:
  *                       type: string
  */
