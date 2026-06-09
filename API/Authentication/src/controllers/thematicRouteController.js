@@ -20,10 +20,10 @@ const getAllThematicRoutes =
                     judul_rute,
                     panjang_rute,
                     deskripsi,
+                    is_delete,
                     created_at,
                     updated_at
                 FROM thematic_routes
-                WHERE is_delete = false
                 ORDER BY id DESC
                 `
             );
@@ -61,11 +61,11 @@ const getThematicRouteById =
                     judul_rute,
                     panjang_rute,
                     deskripsi,
+                    is_delete,
                     created_at,
                     updated_at
                 FROM thematic_routes
                 WHERE id = $1
-                AND is_delete = false
                 `,
                 [id]
             );
@@ -266,6 +266,16 @@ const deleteThematicRoute =
             return errorResponse(
                 res,
                 "Rute thematic tidak ditemukan"
+            );
+        }
+
+        if (
+            routeCheck.rows[0].is_delete
+        ) {
+
+            return errorResponse(
+                res,
+                "Rute thematic sudah dihapus"
             );
         }
 

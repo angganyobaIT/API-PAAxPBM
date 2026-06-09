@@ -28,6 +28,34 @@ const {
  *     responses:
  *       200:
  *         description: Berhasil mengambil data rute thematic
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       judul_rute:
+ *                         type: string
+ *                       panjang_rute:
+ *                         type: number
+ *                       deskripsi:
+ *                         type: string
+ *                       is_delete:
+ *                         type: boolean
+ *                       created_at:
+ *                         type: string
+ *                       updated_at:
+ *                         type: string
  */
 
 /**
@@ -45,6 +73,32 @@ const {
  *     responses:
  *       200:
  *         description: Berhasil mengambil detail rute thematic
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     judul_rute:
+ *                       type: string
+ *                     panjang_rute:
+ *                       type: number
+ *                     deskripsi:
+ *                       type: string
+ *                     is_delete:
+ *                       type: boolean
+ *                     created_at:
+ *                       type: string
+ *                     updated_at:
+ *                       type: string
  */
 
 /**
