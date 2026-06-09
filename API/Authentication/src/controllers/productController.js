@@ -247,28 +247,26 @@ const createProduct = async (
 
         // insert product
         await pool.query(
-            `
-            INSERT INTO products (
-                merchant_id,
-                category_id,
-                nama_produk,
-                harga_produk,
-                deskripsi,
-                image_url
-            )
-            VALUES ($1, $2, $3, $4, $5, $6)
-            `,
-            [
-                [
-                    merchant_id,
-                    category_id,
-                    nama_produk,
-                    harga_produk,
-                    deskripsi,
-                    imageUrl,
-                ]
-            ]
-        );
+        `
+        INSERT INTO products (
+            merchant_id,
+            category_id,
+            nama_produk,
+            harga_produk,
+            deskripsi,
+            image_url
+        )
+        VALUES ($1, $2, $3, $4, $5, $6)
+        `,
+        [
+            merchant_id,
+            category_id,
+            nama_produk,
+            harga_produk,
+            deskripsi,
+            imageUrl,
+        ]
+    );
 
         return successResponse(
             res,
