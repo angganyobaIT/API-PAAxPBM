@@ -1,22 +1,14 @@
 const nodemailer =
     require("nodemailer");
 
-console.log(
-    "EMAIL_USER:",
-    process.env.EMAIL_USER
-);
-
-console.log(
-    "EMAIL_PASS:",
-    process.env.EMAIL_PASS
-        ? "ADA"
-        : "TIDAK ADA"
-);
-
 const transporter =
     nodemailer.createTransport({
 
-        service: "gmail",
+        host: "smtp.gmail.com",
+
+        port: 587,
+
+        secure: false,
 
         auth: {
 
@@ -27,36 +19,8 @@ const transporter =
                 process.env.EMAIL_PASS,
         },
 
-        connectionTimeout:
-            10000,
-
-        greetingTimeout:
-            10000,
-
-        socketTimeout:
-            10000,
+        family: 4
     });
-
-// TEST KONEKSI GMAIL
-transporter.verify(
-    function(error, success) {
-
-        if (error) {
-
-            console.log(
-                "MAIL ERROR:"
-            );
-
-            console.log(error);
-
-        } else {
-
-            console.log(
-                "MAIL SERVER READY"
-            );
-        }
-    }
-);
 
 module.exports =
     transporter;
